@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personalised Learning - Tim's Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #fefbff;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 36px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            font-size: 30px;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            font-size: 24px;
+        }
+
+        .app-link {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .card {
+            background-color: #eff1fb;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+            width: 80%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+<body>
+<h1>Personalised Learning</h1>
+<div class="card">
+    <h2>{{ user.username }}'s Profile</h2>
+    <p>{{ user.username }} has answered a total of {{ stats.total_questions }} questions, answering {{ stats.correct_answers }} correctly.</p>
+    <p>They have an accuracy of {{ stats.correct_answers / stats.total_questions * 100 }}%!</p>
+    <p>Get the Personalised Learning app here and see how you go!</p>
+    <a href="#" class="app-link">
+        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play"
+             width="200">
+    </a> 
+</div>
+</body>
+</html>
