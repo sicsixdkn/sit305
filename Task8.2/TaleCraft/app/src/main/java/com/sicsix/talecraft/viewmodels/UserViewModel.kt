@@ -83,15 +83,4 @@ class UserViewModel @Inject constructor(
         userPreferences.clearJWTToken()
         userPreferences.clearUserDetails()
     }
-
-    /**
-     * Checks if the JWT token is present and returns false if it is not.
-     */
-    private fun checkToken(): Boolean {
-        if (userPreferences.getJWTToken() == null) {
-            errorMessage.value = "Token is null"
-            return false
-        }
-        return true
-    }
 }

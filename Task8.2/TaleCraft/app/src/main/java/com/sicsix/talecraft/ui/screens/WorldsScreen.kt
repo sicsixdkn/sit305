@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sicsix.talecraft.models.World
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorldsScreen(navController: NavController, viewModel: WorldViewModel = viewModel()) {
+fun WorldsScreen(navController: NavController, viewModel: WorldViewModel = hiltViewModel()) {
     // Observe the worlds from the view model
     val worlds by viewModel.worlds.observeAsState()
     // Remembers the world and dismiss box that was swiped when deleting

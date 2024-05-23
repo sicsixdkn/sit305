@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sicsix.talecraft.models.World
 import com.sicsix.talecraft.utility.Utility
@@ -36,7 +37,7 @@ import com.sicsix.talecraft.viewmodels.LibraryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateStoryScreen(navController: NavController, viewModel: LibraryViewModel, worldId: Int) {
+fun CreateStoryScreen(navController: NavController, worldId: Int, viewModel: LibraryViewModel = hiltViewModel()) {
     // Local state for the title text field
     var title by rememberSaveable { mutableStateOf("") }
     // Local state for the error message

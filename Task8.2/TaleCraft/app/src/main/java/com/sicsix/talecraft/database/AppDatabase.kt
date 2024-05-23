@@ -108,7 +108,7 @@ interface AppDao {
      * @return The story with the given ID.
      */
     @Query("SELECT * FROM stories WHERE id = :storyId")
-    suspend fun getStoryById(storyId: Int): Story
+    suspend fun getStoryById(storyId: Int): Story?
 
     /**
      * Deletes the given story from the database.
@@ -144,4 +144,12 @@ interface AppDao {
      */
     @Query("UPDATE stories SET wordCount = :wordCount WHERE id = :storyId")
     suspend fun updateStoryWordCount(storyId: Int, wordCount: Int)
+
+    /**
+     * Deletes all story entries after a given timestamp for a story.
+     *
+     * @param storyId The ID of the story to delete story entries for.
+     */
+    @Query("DELETE FROM story_entries WHERE storyId = :storyId AND timestamp >= :timestamp")
+    suspend fun deleteStoryEntriesAfterTimestamp(storyId: Int, timestamp: Long)
 }

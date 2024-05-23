@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sicsix.talecraft.utility.Utility
 import com.sicsix.talecraft.viewmodels.WorldViewModel
@@ -54,7 +55,7 @@ enum class Genre(val genre: String, val subGenres: List<String>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateWorldScreen(navController: NavController, viewModel: WorldViewModel) {
+fun CreateWorldScreen(navController: NavController, viewModel: WorldViewModel = hiltViewModel()) {
     // Local state for the title and premise text fields
     var title by rememberSaveable { mutableStateOf("") }
     var premise by rememberSaveable { mutableStateOf("") }

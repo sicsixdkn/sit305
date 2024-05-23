@@ -32,7 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sicsix.talecraft.models.Story
 import com.sicsix.talecraft.viewmodels.LibraryViewModel
@@ -41,7 +41,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LibraryScreen(navController: NavController, viewModel: LibraryViewModel = viewModel()) {
+fun LibraryScreen(navController: NavController, viewModel: LibraryViewModel = hiltViewModel()) {
     // Observe the stories from the view model
     val stories by viewModel.stories.observeAsState()
     // Remembers the story and dismiss box that was swiped when deleting
@@ -122,6 +122,7 @@ fun LibraryScreen(navController: NavController, viewModel: LibraryViewModel = vi
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp),
                             onClick = {
+                                viewModel.setActiveStory(story)
                                 navController.navigate("story/${story.id}")
                             }
                         ) {

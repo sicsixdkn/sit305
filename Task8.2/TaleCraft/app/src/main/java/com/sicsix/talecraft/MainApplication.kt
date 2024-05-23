@@ -2,6 +2,7 @@ package com.sicsix.talecraft
 
 import android.app.Application
 import com.sicsix.talecraft.utility.UserPreferences
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

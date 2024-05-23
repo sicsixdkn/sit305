@@ -58,7 +58,7 @@ class AbstractGenerator(ABC):
             if i == 0:
                 story_response["story"] = match[0].strip()
             else:
-                option = match[i].strip().split(": ")[1]
+                option = match[i].split(":")[1].strip()
                 story_response["options"].append(option)
 
         # Return the processed response
@@ -81,19 +81,19 @@ class GradientAIGenerator(AbstractGenerator):
     def generate_story_beginning(self, world):
         """ Generate beginning of the story """
         query = (
+            f"[INST]\n"
             f"GENRE: {world['genre']}\n"
             f"SUBGENRE: {world['subgenre']}\n"
             f"PREMISE: {world['premise']}\n"
-            f"[INST] You are an interactive story generator who generates stories for the end user and provides them with options to continue the story.\n"
+            f"INSTRUCTIONS:\n"
+            f"You are an interactive story generator who generates stories for the end user and provides them with options to continue the story.\n"
             f"You are starting a new story.\n"
             f"The user will be a character in the story that you will create.\n"
             f"Generate around 3 paragraphs to begin the story.\n"
             f"Use the GENRE, SUBGENRE, and PREMISE provided above to guide the story generation.\n"
-            f"Do not include the USER_SELECTED_OPTION in the generated story text.\n"
             f"Provide the user with 1 to 3 options to choose from to continue the story, where the first option may be just 'Continue...'.\n"
             f"The user options should not be grandiose or major plot points, but rather small, immediate choices that the user can make.\n"
-            f"Keep the generated options brief and to the point.\n"
-            f"Format your response as follows:\n"
+            f"Keep the generated options brief and to the point. Format your response EXACTLY as follows:\n"
             f"STORY: [generated story text]\n"
             f"OPTION_A: [generated option A]\n"
             f"OPTION_B: [generated option B]\n"
@@ -101,26 +101,27 @@ class GradientAIGenerator(AbstractGenerator):
             f"[/INST]"
         )
         response = self.model_adapter.complete(query=query, max_generated_token_count=500).generated_output
-        return self.process_generated_text(response)
+        return response
 
     def generate_next_part(self, world, story, user_selection):
         """ Generate next part of the story """
         query = (
+            f"[INST]\n"
             f"STORY_SO_FAR: {story}\n"
             f"USER_SELECTED_OPTION: {user_selection}\n"
-            f"GENRE: {world.genre}\n"
-            f"SUBGENRE: {world.subgenre}\n"
-            f"PREMISE: {world.premise}\n"
-            f"[INST] You are an interactive story generator who generates stories for the end user and provides them with options to continue the story.\n"
+            f"GENRE: {world['genre']}\n"
+            f"SUBGENRE: {world['subgenre']}\n"
+            f"PREMISE: {world['premise']}\n"
+            f"INSTRUCTIONS:\n"
+            f"You are an interactive story generator who generates stories for the end user and provides them with options to continue the story.\n"
             f"You are in the middle of a story.\n"
-            f"The user is a character in the story and has made a choice to follow a certain path.\n"
+            f"The user is a character in the story you are creating.\n"
             f"Generate around 1 to 3 more paragraphs of the story from this point using the STORY_SO_FAR and USER_SELECTED_OPTION.\n"
             f"Use the GENRE, SUBGENRE, and PREMISE provided above to guide the story generation.\n"
-            f"Do not include the USER_SELECTED_OPTION or the STORY_SO_FAR in the generated story text.\n"
+            f"Do not include the USER_SELECTED_OPTION in the generated story text.\n"
             f"Provide the user with 1 to 3 options to choose from to continue the story, where the first option may be just 'Continue...'.\n"
             f"The user options should not be grandiose or major plot points, but rather small, immediate choices that the user can make.\n"
-            f"Keep the generated options brief and to the point.\n"
-            f"Format your response as follows:\n"
+            f"Keep the generated options brief and to the point. Format your response EXACTLY as follows:\n"
             f"STORY: [generated story text]\n"
             f"OPTION_A: [generated option A]\n"
             f"OPTION_B: [generated option B]\n"
@@ -128,7 +129,7 @@ class GradientAIGenerator(AbstractGenerator):
             f"[/INST]"
         )
         response = self.model_adapter.complete(query=query, max_generated_token_count=500).generated_output
-        return self.process_generated_text(response)
+        return response
 
 
 class LocalAIGenerator(AbstractGenerator):
@@ -153,7 +154,7 @@ class LocalAIGenerator(AbstractGenerator):
             f"Do not include the USER_SELECTED_OPTION in the generated story text.\n"
             f"Provide the user with 1 to 3 options to choose from to continue the story, where the first option may be just 'Continue...'.\n"
             f"The user options should not be grandiose or major plot points, but rather small, immediate choices that the user can make.\n"
-            f"Keep the generated options brief and to the point. Format your response as follows:\n"
+            f"Keep the generated options brief and to the point. Format your response EXACTLY as follows:\n"
             f"STORY: [generated story text]\n"
             f"OPTION_A: [generated option A]\n"
             f"OPTION_B: [generated option B]\n"
@@ -176,7 +177,7 @@ class LocalAIGenerator(AbstractGenerator):
             f"Use the GENRE, SUBGENRE, and PREMISE provided above to guide the story generation.\n"
             f"Provide the user with 1 to 3 options to choose from to continue the story, where the first option may be just 'Continue...'.\n"
             f"The user options should not be grandiose or major plot points, but rather small, immediate choices that the user can make.\n"
-            f"Keep the generated options brief and to the point. Format your response as follows:\n"
+            f"Keep the generated options brief and to the point. Format your response EXACTLY as follows:\n"
             f"STORY: [generated story text]\n"
             f"OPTION_A: [generated option A]\n"
             f"OPTION_B: [generated option B]\n"
@@ -281,24 +282,29 @@ class Story(Resource):
         data = request.get_json()
 
         # Check if required fields are present
-        if 'story' not in data or 'world' not in data or 'user_selection' not in data:
+        if 'story' not in data or 'world' not in data or 'user_selection' not in data or 'use_local_llm' not in data:
             return {"msg": "Missing required fields"}, 400
 
         story = data['story']
         world = data['world']
         user_selection = data['user_selection']
+        use_local_llm = data['use_local_llm']
 
         if 'genre' not in world or 'subgenre' not in world or 'premise' not in world:
             return {"msg": "Missing required fields in world"}, 400
 
+        # Select generator based on use_local_llm flag
+        generator = local_generator if use_local_llm else gradient_generator
+
         # Generate story, 10 attempts and if no options are generated, return error
         for i in range(10):
+            print("Generation attempt ", i)
             if story == "":
-                generated_text = story_generator.generate_story_beginning(world)
+                generated_text = generator.generate_story_beginning(world)
             else:
-                generated_text = story_generator.generate_next_part(world, story, user_selection)
+                generated_text = generator.generate_next_part(world, story, user_selection)
 
-            response = story_generator.process_generated_text(generated_text)
+            response = generator.process_generated_text(generated_text)
             if len(response['options']) > 0:
                 break
 
@@ -313,6 +319,6 @@ api.add_resource(Register, '/register')
 api.add_resource(Login, '/login')
 api.add_resource(Story, '/story')
 
-story_generator = LocalAIGenerator()
-# Comment out the line above and uncomment the line below to use the Gradient API for story generation
-# story_generator = GradientAIGenerator()
+# Initialise the Gradient AI and Local AI generators
+local_generator = LocalAIGenerator()
+gradient_generator = GradientAIGenerator()

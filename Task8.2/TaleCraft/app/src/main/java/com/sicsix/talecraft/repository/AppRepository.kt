@@ -87,7 +87,7 @@ class AppRepository @Inject constructor(
      * @param storyId The ID of the story to get.
      * @return The story with the given ID.
      */
-    suspend fun getStoryById(storyId: Int): Story {
+    suspend fun getStoryById(storyId: Int): Story? {
         return appDao.getStoryById(storyId)
     }
 
@@ -109,7 +109,7 @@ class AppRepository @Inject constructor(
     suspend fun insertStoryEntry(storyId: Int, content: String, isUserSelection: Boolean, options: List<String> = emptyList()) {
         appDao.insertStoryEntry(StoryEntry(storyId = storyId, content = content, isUserSelection = isUserSelection, options = options))
         if (!isUserSelection) {
-            val story = appDao.getStoryById(storyId)
+            val story = appDao.getStoryById(storyId) ?: throw IllegalArgumentException("Story not found")
             appDao.updateStoryWordCount(storyId, story.wordCount + content.split(" ").size)
         }
     }
@@ -120,6 +120,17 @@ class AppRepository @Inject constructor(
      * @param storyId The ID of the story to get the entries for.
      * @return The entries for the story with the given ID.
      */
-    fun getStoryEntries(storyId: Int) = appDao.getStoryEntries(storyId).asLiveData()
+    fun getStoryEntries(storyId: Int) = appDao.getStoryEntries(storyId)
+
+    /**
+     * Deletes all story entries after the given timestamp for the story with the given ID.
+     *
+     * @param storyId The ID of the story to delete the entries for.
+     * @param timestamp The timestamp after which to delete the entries.
+     */
+    suspend fun revertStory(entry: StoryEntry) {
+        // Delete all entries including and after the selected entry
+        appDao.deleteStoryEntriesAfterTimestamp(entry.storyId, entry.timestamp)
+    }
 }
 

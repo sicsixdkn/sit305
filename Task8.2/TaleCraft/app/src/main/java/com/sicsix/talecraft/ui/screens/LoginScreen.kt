@@ -32,13 +32,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sicsix.talecraft.utility.Utility.Companion.validateEntry
 import com.sicsix.talecraft.viewmodels.UserViewModel
 
 @Composable
-fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewModel()) {
+fun LoginScreen(navController: NavController, viewModel: UserViewModel = hiltViewModel()) {
     // Local state for the username and password input fields
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
