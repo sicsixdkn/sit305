@@ -66,7 +66,7 @@ fun StoryScreen(storyViewModel: StoryViewModel = hiltViewModel(), settingsViewMo
         if (storyEntries == null) {
             return@LaunchedEffect
         }
-        if (storyEntries!!.isEmpty()) {
+        if (storyEntries!!.isEmpty() && !isLoading && !isQuerying) {
             // Generate the first story entry if it's a new story
             storyViewModel.generateStoryEntry(useLocalLLM)
         } else {

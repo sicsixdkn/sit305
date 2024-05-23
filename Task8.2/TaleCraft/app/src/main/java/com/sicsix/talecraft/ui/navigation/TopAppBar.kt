@@ -40,6 +40,9 @@ fun TopAppBar(
         Screen.Library.route -> Screen.Library.title
         Screen.Story.route -> Screen.Story.title
         Screen.Worlds.route -> Screen.Worlds.title
+        Screen.CreateStory.route -> Screen.CreateStory.title
+        Screen.CreateWorld.route -> Screen.CreateWorld.title
+        Screen.Settings.route -> Screen.Settings.title
         else -> ""
     }
 
